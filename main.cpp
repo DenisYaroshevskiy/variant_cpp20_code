@@ -1,4 +1,5 @@
 #include "union_.h"
+#include "switch_.hpp"
 
 #include <vector>
 
@@ -29,8 +30,17 @@ static_assert(std::same_as<double&,        decltype(get<2>(std::declval<us&     
 static_assert(std::same_as<double&&,       decltype(get<2>(std::declval<us&&      >()))>);
 static_assert(std::same_as<double const&&, decltype(get<2>(std::declval<us const&&>()))>);
 
-
 }  // namespace union_test
+
+namespace switch_test {
+
+constexpr auto identity = []<std::size_t i>(tools::c_idx<i>) mutable { return i; };
+constexpr auto v1_identity = tools::v1::switcher{tools::c_idx_v<3>, identity};
+
+static_assert(2u == v1_identity(2u));
+static_assert(1u == v1_identity(1u));
+
+}  // namespace switch_test
 
 } // namespace
 
