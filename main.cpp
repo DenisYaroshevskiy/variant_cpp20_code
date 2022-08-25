@@ -40,6 +40,15 @@ constexpr auto v1_identity = tools::v1::switcher{tools::c_idx_v<3>, identity};
 static_assert(2u == v1_identity(2u));
 static_assert(1u == v1_identity(1u));
 
+constexpr auto v2_identity = tools::v2::switcher{tools::c_idx_v<1000>, identity};
+static_assert(999u == v2_identity(999u));
+static_assert(1u    == v2_identity(1u));
+
+constexpr auto v3_identity = tools::v3::switcher{tools::c_idx_v<2000>, identity};
+static_assert(999u  == v3_identity(999u));
+static_assert(1u    == v3_identity(1u));
+static_assert(1500u == v3_identity(1500u));
+
 }  // namespace switch_test
 
 } // namespace
