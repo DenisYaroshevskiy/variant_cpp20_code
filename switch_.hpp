@@ -52,12 +52,48 @@ struct switcher {
 
   template <std::size_t start>
   static constexpr res_t impl(Op _op, std::size_t i) {
-    if (i == start) return _op(c_idx_v<0>);
-    if constexpr (size >= start + 1) if (i == start + 1) return _op(c_idx_v<start + 1>);
-    if constexpr (size >= start + 2) if (i == start + 2) return _op(c_idx_v<start + 2>);
-    if constexpr (size >= start + 3) if (i == start + 3) return _op(c_idx_v<start + 3>);
-    if constexpr (size >= start + 4) return impl<start + 4>(_op, i);
-    else                             __builtin_unreachable();
+    #define TOOLS_CASE(x) if constexpr (size >= start + (x)) if (i == start + (x)) return _op(c_idx_v<start + (x)>);
+
+    #define TOOLS_CASE10(x) \
+      TOOLS_CASE(10 * (x) + 0) \
+      TOOLS_CASE(10 * (x) + 1) \
+      TOOLS_CASE(10 * (x) + 2) \
+      TOOLS_CASE(10 * (x) + 3) \
+      TOOLS_CASE(10 * (x) + 4) \
+      TOOLS_CASE(10 * (x) + 5) \
+      TOOLS_CASE(10 * (x) + 6) \
+      TOOLS_CASE(10 * (x) + 7) \
+      TOOLS_CASE(10 * (x) + 8) \
+      TOOLS_CASE(10 * (x) + 9)
+
+    #define TOOLS_CASE100(x) \
+      TOOLS_CASE10(10 * (x) + 0) \
+      TOOLS_CASE10(10 * (x) + 1) \
+      TOOLS_CASE10(10 * (x) + 2) \
+      TOOLS_CASE10(10 * (x) + 3) \
+      TOOLS_CASE10(10 * (x) + 4) \
+      TOOLS_CASE10(10 * (x) + 5) \
+      TOOLS_CASE10(10 * (x) + 6) \
+      TOOLS_CASE10(10 * (x) + 7) \
+      TOOLS_CASE10(10 * (x) + 8) \
+      TOOLS_CASE10(10 * (x) + 9)
+
+    TOOLS_CASE100(0)
+    TOOLS_CASE100(1)
+    TOOLS_CASE100(2)
+    TOOLS_CASE100(3)
+    TOOLS_CASE100(4)
+    TOOLS_CASE100(5)
+    TOOLS_CASE100(6)
+    TOOLS_CASE100(7)
+    TOOLS_CASE100(8)
+    TOOLS_CASE100(9)
+    if constexpr (size >= start + 1000) return impl<start + 1000>(_op, i);
+    else                                __builtin_unreachable();
+
+    #undef TOOLS_CASE100
+    #undef TOOLS_CASE10
+    #undef TOOLS_CASE
   }
 
   constexpr res_t operator()(std::size_t i) const

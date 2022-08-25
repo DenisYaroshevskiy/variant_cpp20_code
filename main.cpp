@@ -1,6 +1,8 @@
 #include "union_.h"
 #include "switch_.hpp"
 
+#include <exception>
+#include <stdexcept>
 #include <vector>
 
 namespace
@@ -34,14 +36,20 @@ static_assert(std::same_as<double const&&, decltype(get<2>(std::declval<us const
 
 namespace switch_test {
 
+template <std::size_t a, std::size_t b>
+concept test = a == b;
+
 constexpr auto identity = []<std::size_t i>(tools::c_idx<i>) mutable { return i; };
-constexpr auto v1_identity = tools::v1::switcher{tools::c_idx_v<3>, identity};
+constexpr auto v1_identity = tools::v1::switcher{tools::c_idx_v<10>, identity};
 
 static_assert(2u == v1_identity(2u));
 static_assert(1u == v1_identity(1u));
 
-constexpr auto v2_identity = tools::v2::switcher{tools::c_idx_v<1000>, identity};
+constexpr auto v2_identity = tools::v2::switcher{tools::c_idx_v<2000>, identity};
+static_assert(test<4u, v2_identity(4u)>);
+static_assert(test<870u, v2_identity(870u)>);
 static_assert(999u == v2_identity(999u));
+static_assert(1018u == v2_identity(1018u));
 static_assert(1u    == v2_identity(1u));
 
 constexpr auto v3_identity = tools::v3::switcher{tools::c_idx_v<2000>, identity};
@@ -49,9 +57,18 @@ static_assert(999u  == v3_identity(999u));
 static_assert(1u    == v3_identity(1u));
 static_assert(1500u == v3_identity(1500u));
 
+void switch_runtime_test() {
+  for (auto i = 0u; i != 2000u; ++i) {
+   if(v2_identity(i) != i) throw std::runtime_error("v2");
+   if(v3_identity(i) != i) throw std::runtime_error("v3");
+  }
+}
+
 }  // namespace switch_test
 
 } // namespace
 
 
-int main() {}
+int main() {
+  switch_test::switch_runtime_test();
+}
