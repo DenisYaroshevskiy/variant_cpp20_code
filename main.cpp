@@ -1,5 +1,6 @@
+#include "int_util.h"
+#include "switch_.h"
 #include "union_.h"
-#include "switch_.hpp"
 
 #include <exception>
 #include <stdexcept>
@@ -65,6 +66,16 @@ void switch_runtime_test() {
 }
 
 }  // namespace switch_test
+
+namespace int_util_test {
+
+static_assert(std::same_as<std::uint8_t,  tools::uint_at_least<100>>);
+static_assert(std::same_as<std::uint8_t,  tools::uint_at_least<255>>);
+static_assert(std::same_as<std::uint16_t, tools::uint_at_least<256>>);
+static_assert(std::same_as<std::uint32_t, tools::uint_at_least<std::numeric_limits<std::uint16_t>::max() + 1u>>);
+static_assert(std::same_as<std::uint64_t, tools::uint_at_least<5'000'000'000>>);
+
+} // namespace int_util_test
 
 } // namespace
 
