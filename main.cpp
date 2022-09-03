@@ -2,6 +2,7 @@
 #include "int_util.h"
 #include "switch_.h"
 #include "union_.h"
+#include "variant_impl.hpp"
 
 #include <exception>
 #include <stdexcept>
@@ -103,6 +104,51 @@ constexpr bool test() {
 static_assert(test());
 
 }  // namespace c_array_math_test
+
+struct A {};
+struct B {};
+struct C {};
+struct D {};
+
+using V1 = tools::detail::variant_data<A, B>;
+using V2 = tools::detail::variant_data<C, D>;
+
+
+struct Visit {
+  A&& operator()(A&&, C&&) const noexcept;
+  D&& operator()(A&&, D&&) const;
+  B&& operator()(B&&, C&&) const;
+  D&& operator()(B&&, D&&) const noexcept;
+};
+
+namespace one_case_result_test {
+
+using namespace tools::detail;
+
+static_assert(
+  std::same_as<one_case_res_t<0, Visit, V1&&, V2&&>, A&&>
+);
+
+static_assert(one_case_noexcept_v<0, Visit, V1&&, V2&&>);
+
+static_assert(
+  std::same_as<one_case_res_t<1, Visit, V1&&, V2&&>, D&&>
+);
+
+static_assert(
+  std::same_as<one_case_res_t<2, Visit, V1&&, V2&&>, B&&>
+);
+
+static_assert(
+  std::same_as<one_case_res_t<3, Visit, V1&&, V2&&>, D&&>
+);
+
+static_assert(
+  std::same_as<one_case_res_t<0, Visit, V1 const&, V2&&>,
+  error_type<Visit, A const &, C&&>>
+);
+
+}  // namespace one_case_result_test
 
 } // namespace
 

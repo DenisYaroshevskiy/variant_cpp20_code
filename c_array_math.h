@@ -33,11 +33,16 @@ struct c_array_math {
     return std::inner_product(pows.begin(), pows.end(), idx.begin(), 0u);
   }
 
+  template <std::size_t idx>
+  static constexpr auto to_mutli_idx_sequence() {
+    return []<std::size_t ...is>(std::index_sequence<is...>) {
+      constexpr auto arr = to_multi_idx(idx);
+      return std::index_sequence<arr[is]...>{};
+    }(std::make_index_sequence<sizeof...(dims)>{});
+  }
+
   template <std::size_t i>
-  static constexpr auto multi_idx_v = []<std::size_t ...is> (std::index_sequence<is...> ) {
-    constexpr auto arr = to_multi_idx(i);
-    return std::index_sequence<arr[is]...>{};
-  }(std::make_index_sequence<sizeof...(dims)>{});
+  using multi_idx_sequence = decltype(to_mutli_idx_sequence<i>());
 };
 
 }  // namespace tools
