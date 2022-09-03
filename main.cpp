@@ -1,3 +1,4 @@
+#include "c_array_math.h"
 #include "int_util.h"
 #include "switch_.h"
 #include "union_.h"
@@ -76,6 +77,32 @@ static_assert(std::same_as<std::uint32_t, tools::uint_at_least<std::numeric_limi
 static_assert(std::same_as<std::uint64_t, tools::uint_at_least<5'000'000'000>>);
 
 } // namespace int_util_test
+
+namespace c_array_math_test {
+
+constexpr bool test() {
+  using math = tools::c_array_math<3, 4, 2>;
+  int arr[3][4][2] = {};
+
+  std::size_t linear = 0u;
+
+  for (std::size_t i = 0; i != 3; ++i) {
+    for (std::size_t j = 0; j != 4; ++j) {
+      for (std::size_t k = 0; k != 2; ++k) {
+        auto multi = std::array{i, j, k};
+        if (math::to_multi_idx(linear) != multi) return false;
+        if (math::to_linear_idx(multi) != linear) return false;
+        ++linear;
+      }
+    }
+  }
+
+  return true;
+}
+
+static_assert(test());
+
+}  // namespace c_array_math_test
 
 } // namespace
 
