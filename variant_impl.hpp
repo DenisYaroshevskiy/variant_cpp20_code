@@ -7,7 +7,6 @@
 #include "union_.h"
 #include "one_result.h"
 
-#include <concepts>
 
 namespace tools::detail {
 

@@ -1,4 +1,5 @@
 #include "c_array_math.h"
+#include "common_type.h"
 #include "int_util.h"
 #include "switch_.h"
 #include "union_.h"
@@ -137,7 +138,6 @@ static_assert(
 
 static_assert(!one_case_noexcept_v<1, Visit, V1&&, V2&&>);
 
-
 static_assert(
   std::same_as<one_case_res_t<2, Visit, V1&&, V2&&>, B&&>
 );
@@ -152,6 +152,25 @@ static_assert(
 );
 
 }  // namespace one_case_result_test
+
+namespace common_type_test {
+
+using namespace tools::detail;
+
+static_assert(std::same_as<common_type_t<int, double>, double>);
+static_assert(std::same_as<common_type_t<double, int, int>, double>);
+static_assert(std::same_as<common_type_t<std::string, int, int>,
+              no_common_type<std::string, int, int>>);
+
+static_assert(std::same_as<common_type_t<not_invocable<int, int>, int>,
+                           not_invocable<int, int>>);
+
+#if 0
+static_assert(std::same_as<common_type_t<not_invocable<int, int>, not_invocable<int, double>>,
+                           not_invocable<int, double>>);
+#endif
+
+}  // namespace common_type_test
 
 } // namespace
 
