@@ -17,4 +17,9 @@ using visit_result_t = typename decltype(visit_result_impl<Vis, Vs...>(
     std::make_index_sequence<(std::remove_cvref_t<Vs>::size * ... )>{})
   )::type;
 
+template <typename Vis, typename... Vs>
+constexpr bool noexcept_visit_v = []<std::size_t ... i>(std::index_sequence<i...>) {
+  return (one_case_noexcept_v<i, Vis, Vs...> && ...);
+}(std::make_index_sequence<(std::remove_cvref_t<Vs>::size * ... )>{});
+
 } // namespace tools::detail
