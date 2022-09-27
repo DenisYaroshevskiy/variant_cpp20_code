@@ -135,6 +135,9 @@ static_assert(
   std::same_as<one_case_res_t<1, Visit, V1&&, V2&&>, D&&>
 );
 
+static_assert(!one_case_noexcept_v<1, Visit, V1&&, V2&&>);
+
+
 static_assert(
   std::same_as<one_case_res_t<2, Visit, V1&&, V2&&>, B&&>
 );
@@ -145,7 +148,7 @@ static_assert(
 
 static_assert(
   std::same_as<one_case_res_t<0, Visit, V1 const&, V2&&>,
-  error_type<Visit, A const &, C&&>>
+  not_invocable<Visit, A const &, C&&>>
 );
 
 }  // namespace one_case_result_test
