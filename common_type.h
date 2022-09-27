@@ -2,7 +2,7 @@
 
 #include "error_tag_support.h"
 
-namespace tools::details {
+namespace tools {
 
 template <typename ...Ts>
 struct no_common_type {
@@ -19,4 +19,4 @@ auto common_type_impl() {
 template <typename ...Ts>
 using common_type_t = typename decltype(common_type_impl<Ts...>())::type;
 
-}  // namespace tools::details
+}  // namespace tools

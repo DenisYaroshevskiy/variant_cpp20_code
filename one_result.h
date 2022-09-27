@@ -4,7 +4,7 @@
 
 #include <concepts>
 
-namespace tools::details {
+namespace tools::detail {
 
 template <typename ...Ts>
 struct not_invocable {
@@ -41,4 +41,4 @@ using one_case_res_t = typename decltype(one_case_result_impl(c_idx<case_>{}, st
 template <std::size_t case_, typename Vis, typename ...Vs>
 constexpr bool one_case_noexcept_v = decltype(one_case_result_impl(c_idx<case_>{}, std::declval<Vis>(), std::declval<Vs>()...))::is_noexcept;
 
-}  // namespace tools::details
+}  // namespace tools::detail

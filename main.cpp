@@ -6,6 +6,7 @@
 #include "error_tag_support.h"
 #include "get_type.h"
 #include "variant_impl.hpp"
+#include "visit_result.h"
 
 #include <exception>
 #include <stdexcept>
@@ -113,8 +114,8 @@ struct B {};
 struct C {};
 struct D {};
 
-using V1 = tools::details::variant_data<A, B>;
-using V2 = tools::details::variant_data<C, D>;
+using V1 = tools::detail::variant_data<A, B>;
+using V2 = tools::detail::variant_data<C, D>;
 
 
 struct Visit {
@@ -126,7 +127,7 @@ struct Visit {
 
 namespace one_case_result_test {
 
-using namespace tools::details;
+using namespace tools::detail;
 
 static_assert(
   std::same_as<one_case_res_t<0, Visit, V1&&, V2&&>, A&&>
@@ -219,7 +220,7 @@ static_assert(
 namespace first_error_test {
 
 using namespace tools;
-using namespace tools::details;
+using namespace tools::detail;
 
 struct err_t {
   using is_error = void;
@@ -237,7 +238,8 @@ static_assert(std::same_as<
 
 namespace common_type_test {
 
-using namespace tools::details;
+using namespace tools;
+using namespace tools::detail;
 
 static_assert(std::same_as<common_type_t<>, no_common_type<>>);
 static_assert(std::same_as<common_type_t<int, double>, double>);

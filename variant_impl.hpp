@@ -8,7 +8,7 @@
 #include "one_result.h"
 
 
-namespace tools::details {
+namespace tools::detail {
 
 template <typename ... Ts>
 struct variant_data {
@@ -19,4 +19,4 @@ struct variant_data {
   index_type idx;
 };
 
-}  // namespace tools::details
+}  // namespace tools::detail
