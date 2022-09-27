@@ -109,54 +109,7 @@ static_assert(test());
 
 }  // namespace c_array_math_test
 
-struct A {};
-struct B {};
-struct C {};
-struct D {};
-
-using V1 = tools::detail::variant_data<A, B>;
-using V2 = tools::detail::variant_data<C, D>;
-
-
-struct Visit {
-  A&& operator()(A&&, C&&) const noexcept;
-  D&& operator()(A&&, D&&) const;
-  B&& operator()(B&&, C&&) const;
-  D&& operator()(B&&, D&&) const noexcept;
-};
-
-namespace one_case_result_test {
-
-using namespace tools::detail;
-
-static_assert(
-  std::same_as<one_case_res_t<0, Visit, V1&&, V2&&>, A&&>
-);
-
-static_assert(one_case_noexcept_v<0, Visit, V1&&, V2&&>);
-
-static_assert(
-  std::same_as<one_case_res_t<1, Visit, V1&&, V2&&>, D&&>
-);
-
-static_assert(!one_case_noexcept_v<1, Visit, V1&&, V2&&>);
-
-static_assert(
-  std::same_as<one_case_res_t<2, Visit, V1&&, V2&&>, B&&>
-);
-
-static_assert(
-  std::same_as<one_case_res_t<3, Visit, V1&&, V2&&>, D&&>
-);
-
-static_assert(
-  std::same_as<one_case_res_t<0, Visit, V1 const&, V2&&>,
-  not_invocable<Visit, A const &, C&&>>
-);
-
-}  // namespace one_case_result_test
-
-namespace nth_type_test {
+namespace get_type_test {
 
 using namespace tools;
 
@@ -215,7 +168,7 @@ static_assert(
 );
 
 
-}  // namespace nth_type_test
+}  // namespace get_type_test
 
 namespace first_error_test {
 
@@ -254,6 +207,71 @@ static_assert(std::same_as<common_type_t<not_invocable<int, int>, not_invocable<
                            not_invocable<int, int>>);
 
 }  // namespace common_type_test
+
+namespace one_case_result_test {
+
+struct A {};
+struct B {};
+struct C {};
+struct D {};
+
+using V1 = tools::detail::variant_data<A, B>;
+using V2 = tools::detail::variant_data<C, D>;
+
+
+struct Visit {
+  A&& operator()(A&&, C&&) const noexcept;
+  D&& operator()(A&&, D&&) const;
+  B&& operator()(B&&, C&&) const;
+  D&& operator()(B&&, D&&) const noexcept;
+};
+
+using namespace tools::detail;
+
+static_assert(
+  std::same_as<one_case_res_t<0, Visit, V1&&, V2&&>, A&&>
+);
+
+static_assert(one_case_noexcept_v<0, Visit, V1&&, V2&&>);
+
+static_assert(
+  std::same_as<one_case_res_t<1, Visit, V1&&, V2&&>, D&&>
+);
+
+static_assert(!one_case_noexcept_v<1, Visit, V1&&, V2&&>);
+
+static_assert(
+  std::same_as<one_case_res_t<2, Visit, V1&&, V2&&>, B&&>
+);
+
+static_assert(
+  std::same_as<one_case_res_t<3, Visit, V1&&, V2&&>, D&&>
+);
+
+static_assert(
+  std::same_as<one_case_res_t<0, Visit, V1 const&, V2&&>,
+  not_invocable<Visit, A const &, C&&>>
+);
+
+}  // namespace one_case_result_test
+
+namespace visit_result_test {
+
+using namespace tools::detail;
+
+using V1 = tools::detail::variant_data<char, short>;
+using V2 = tools::detail::variant_data<int, double>;
+using V3 = tools::detail::variant_data<std::string, double>;
+
+auto min_l = [](auto a, auto b) -> decltype( b < a ? b : a ) {
+  return b < a ? b : a;
+};
+
+static_assert(std::same_as<decltype(
+  tools::detail::visit(min_l, std::declval<V1>(), std::declval<V2>())),
+  double>);
+
+}  // namespace visit_result_test
 
 } // namespace
 
