@@ -21,8 +21,7 @@ struct variant_data {
 
 template <typename Vis, typename ...Vs>
 auto visit(Vis&& vis, Vs&& ... vs)
-  noexcept ( noexcept_visit_v<Vis, Vs...> ) -> visit_result_t<Vis, Vs...>
-  requires (!error_tag_type<visit_result_t<Vis, Vs...>>) {
+  noexcept ( noexcept_visit_v<Vis, Vs...> ) -> visit_result_t<Vis, Vs...> {
   using math = c_array_math<std::remove_cvref_t<Vs>::size...>;
   using res = visit_result_t<Vis, Vs...>;
 

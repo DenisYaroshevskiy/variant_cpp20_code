@@ -271,6 +271,10 @@ static_assert(std::same_as<decltype(
   tools::detail::visit(min_l, std::declval<V1>(), std::declval<V2>())),
   double>);
 
+void foo(V1& v1, V3& v3) {
+  tools::detail::visit(min_l, v1, v3);
+}
+
 }  // namespace visit_result_test
 
 } // namespace

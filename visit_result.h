@@ -8,8 +8,9 @@ namespace tools::detail
 
 template <typename Vis, typename... Vs, std::size_t... i>
 auto visit_result_impl(std::index_sequence<i...>) {
-  return std::type_identity<
-      tools::common_type_t<one_case_res_t<i, Vis, Vs...> ...>>{};
+  using res_t = tools::common_type_t<one_case_res_t<i, Vis, Vs...> ...>;
+  if constexpr ( error_tag_type<res_t> ) return res_t{};
+  else return std::type_identity<res_t>{};
 }
 
 template <typename Vis, typename... Vs>
