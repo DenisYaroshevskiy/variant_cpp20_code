@@ -2,9 +2,6 @@
 
 namespace tools::detail {
 
-template <typename T>
-concept error_tag = requires { typename T::is_error; };
-
 template <typename ...Ts>
 struct no_common_type {
   no_common_type(auto&&...) {}

@@ -3,6 +3,7 @@
 #include "int_util.h"
 #include "switch_.h"
 #include "union_.h"
+#include "first_error.h"
 #include "variant_impl.hpp"
 
 #include <exception>
@@ -152,6 +153,90 @@ static_assert(
 );
 
 }  // namespace one_case_result_test
+
+namespace nth_type_test {
+
+using namespace tools::detail;
+
+template <std::size_t i>
+struct ith {};
+
+template <std::size_t i>
+using call_get_t =
+  get_type_t<i,
+    ith<0>,  ith<1>,  ith<2>,  ith<3>,  ith<4>,
+    ith<5>,  ith<6>,  ith<7>,  ith<8>,  ith<9>,
+    ith<10>, ith<11>, ith<12>, ith<13>, ith<14>>;
+
+static_assert(std::same_as<call_get_t<0>, ith<0>>);
+static_assert(std::same_as<call_get_t<1>, ith<1>>);
+static_assert(std::same_as<call_get_t<2>, ith<2>>);
+static_assert(std::same_as<call_get_t<3>, ith<3>>);
+static_assert(std::same_as<call_get_t<4>, ith<4>>);
+
+static_assert(std::same_as<call_get_t<5>, ith<5>>);
+static_assert(std::same_as<call_get_t<6>, ith<6>>);
+static_assert(std::same_as<call_get_t<7>, ith<7>>);
+static_assert(std::same_as<call_get_t<8>, ith<8>>);
+static_assert(std::same_as<call_get_t<9>, ith<9>>);
+
+static_assert(std::same_as<call_get_t<10>, ith<10>>);
+static_assert(std::same_as<call_get_t<11>, ith<11>>);
+static_assert(std::same_as<call_get_t<12>, ith<12>>);
+static_assert(std::same_as<call_get_t<13>, ith<13>>);
+static_assert(std::same_as<call_get_t<14>, ith<14>>);
+
+static_assert(std::same_as<call_get_t<15>, out_of_bounds>);
+static_assert(std::same_as<call_get_t<16>, out_of_bounds>);
+
+
+static_assert(
+  std::same_as<
+    get_type_t<0, int, char, double>,
+    int
+  >
+);
+
+
+static_assert(
+  std::same_as<
+    get_type_t<1, int, char, double>,
+    char
+  >
+);
+
+static_assert(
+  std::same_as<
+    get_type_t<2, int, char, double>,
+    double
+  >
+);
+
+
+}  // namespace nth_type_test
+
+#if 0
+namespace first_error_test {
+
+using namespace tools::detail;
+
+struct err_t {
+  using is_error = void;
+};
+
+static_assert(std::same_as<first_error_t<err_t>, err_t>);
+static_assert(!error_tag<int*>);
+static_assert(std::same_as<first_error_t<int, err_t>, err_t>);
+#if 0
+static_assert(std::same_as<first_error_t<int, int, err_t>, err_t>);
+static_assert(std::same_as<first_error_t<int, err_t, int, err_t>, err_t>);
+#endif
+
+static_assert(std::same_as<
+  first_error_t<not_invocable<int, int>>, not_invocable<int, int>>);
+
+} // namespace first_error_test
+#endif
 
 namespace common_type_test {
 
