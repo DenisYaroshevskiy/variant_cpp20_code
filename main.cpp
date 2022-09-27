@@ -3,7 +3,8 @@
 #include "int_util.h"
 #include "switch_.h"
 #include "union_.h"
-#include "first_error.h"
+#include "error_tag_support.h"
+#include "get_type.h"
 #include "variant_impl.hpp"
 
 #include <exception>
@@ -112,8 +113,8 @@ struct B {};
 struct C {};
 struct D {};
 
-using V1 = tools::detail::variant_data<A, B>;
-using V2 = tools::detail::variant_data<C, D>;
+using V1 = tools::details::variant_data<A, B>;
+using V2 = tools::details::variant_data<C, D>;
 
 
 struct Visit {
@@ -125,7 +126,7 @@ struct Visit {
 
 namespace one_case_result_test {
 
-using namespace tools::detail;
+using namespace tools::details;
 
 static_assert(
   std::same_as<one_case_res_t<0, Visit, V1&&, V2&&>, A&&>
@@ -156,7 +157,7 @@ static_assert(
 
 namespace nth_type_test {
 
-using namespace tools::detail;
+using namespace tools;
 
 template <std::size_t i>
 struct ith {};
@@ -215,33 +216,30 @@ static_assert(
 
 }  // namespace nth_type_test
 
-#if 0
 namespace first_error_test {
 
-using namespace tools::detail;
+using namespace tools;
+using namespace tools::details;
 
 struct err_t {
   using is_error = void;
 };
 
 static_assert(std::same_as<first_error_t<err_t>, err_t>);
-static_assert(!error_tag<int*>);
 static_assert(std::same_as<first_error_t<int, err_t>, err_t>);
-#if 0
 static_assert(std::same_as<first_error_t<int, int, err_t>, err_t>);
 static_assert(std::same_as<first_error_t<int, err_t, int, err_t>, err_t>);
-#endif
 
 static_assert(std::same_as<
   first_error_t<not_invocable<int, int>>, not_invocable<int, int>>);
 
 } // namespace first_error_test
-#endif
 
 namespace common_type_test {
 
-using namespace tools::detail;
+using namespace tools::details;
 
+static_assert(std::same_as<common_type_t<>, no_common_type<>>);
 static_assert(std::same_as<common_type_t<int, double>, double>);
 static_assert(std::same_as<common_type_t<double, int, int>, double>);
 static_assert(std::same_as<common_type_t<std::string, int, int>,
@@ -250,10 +248,8 @@ static_assert(std::same_as<common_type_t<std::string, int, int>,
 static_assert(std::same_as<common_type_t<not_invocable<int, int>, int>,
                            not_invocable<int, int>>);
 
-#if 0
 static_assert(std::same_as<common_type_t<not_invocable<int, int>, not_invocable<int, double>>,
-                           not_invocable<int, double>>);
-#endif
+                           not_invocable<int, int>>);
 
 }  // namespace common_type_test
 
