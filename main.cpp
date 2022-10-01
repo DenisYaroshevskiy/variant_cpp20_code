@@ -123,6 +123,11 @@ using call_get_t =
     ith<5>,  ith<6>,  ith<7>,  ith<8>,  ith<9>,
     ith<10>, ith<11>, ith<12>, ith<13>, ith<14>>;
 
+template <std::size_t i>
+concept can_call_get = requires {
+  { std::declval<call_get_t<i>>() };
+};
+
 static_assert(std::same_as<call_get_t<0>, ith<0>>);
 static_assert(std::same_as<call_get_t<1>, ith<1>>);
 static_assert(std::same_as<call_get_t<2>, ith<2>>);
@@ -141,9 +146,9 @@ static_assert(std::same_as<call_get_t<12>, ith<12>>);
 static_assert(std::same_as<call_get_t<13>, ith<13>>);
 static_assert(std::same_as<call_get_t<14>, ith<14>>);
 
-static_assert(std::same_as<call_get_t<15>, out_of_bounds>);
-static_assert(std::same_as<call_get_t<16>, out_of_bounds>);
-
+static_assert(can_call_get<11>);
+static_assert(!can_call_get<15>);
+static_assert(!can_call_get<16>);
 
 static_assert(
   std::same_as<
@@ -271,9 +276,11 @@ static_assert(std::same_as<decltype(
   tools::detail::visit(min_l, std::declval<V1>(), std::declval<V2>())),
   double>);
 
+#if 0
 void foo(V1& v1, V3& v3) {
   tools::detail::visit(min_l, v1, v3);
 }
+#endif
 
 }  // namespace visit_result_test
 

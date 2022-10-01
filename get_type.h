@@ -4,23 +4,19 @@
 
 namespace tools {
 
-struct out_of_bounds {
-  using is_error = void;
-};
-
 // https://github.com/willwray
 
 template <std::size_t n,
-          typename T0 = out_of_bounds,
-          typename T1 = out_of_bounds,
-          typename T2 = out_of_bounds,
-          typename T3 = out_of_bounds,
-          typename T4 = out_of_bounds,
-          typename T5 = out_of_bounds,
-          typename T6 = out_of_bounds,
-          typename T7 = out_of_bounds,
-          typename T8 = out_of_bounds,
-          typename T9 = out_of_bounds,
+          typename T0 = void,
+          typename T1 = void,
+          typename T2 = void,
+          typename T3 = void,
+          typename T4 = void,
+          typename T5 = void,
+          typename T6 = void,
+          typename T7 = void,
+          typename T8 = void,
+          typename T9 = void,
           typename ... Ts>
 constexpr auto get_type_impl() {
   /**/ if constexpr ( n == 0 ) return std::type_identity<T0>{};
@@ -37,6 +33,7 @@ constexpr auto get_type_impl() {
 }
 
 template <std::size_t n, typename ...Ts>
+  requires (n < sizeof ...(Ts))
 using get_type_t = typename decltype(get_type_impl<n, Ts...>())::type;
 
 }  // namespace tools
