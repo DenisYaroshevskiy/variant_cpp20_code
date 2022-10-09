@@ -3,6 +3,7 @@
 #include <cstdint>
 
 namespace tools {
+namespace _type_lists {
 
 // https://github.com/willwray
 
@@ -32,8 +33,25 @@ constexpr auto get_type_impl() {
   else                         return get_type_impl<n - 10, Ts...>();
 }
 
+template <typename T, typename ...Ts>
+constexpr std::size_t get_type_idx_impl() {
+  std::size_t i = 0;
+  for (bool x : { std::same_as<T, Ts> ...}) {
+    if (x) break;
+    ++i;
+  }
+  return i;
+}
+
+}  // namespace _type_lists
+
+template <typename T, typename ...Ts>
+  requires ( _type_lists::get_type_idx_impl<T, Ts...>() < sizeof...(Ts))
+constexpr auto find_type_idx = _type_lists::get_type_idx_impl<T, Ts...>();
+
 template <std::size_t n, typename ...Ts>
   requires (n < sizeof ...(Ts))
-using get_type_t = typename decltype(get_type_impl<n, Ts...>())::type;
+using get_type_t = typename decltype(_type_lists::get_type_impl<n, Ts...>())::type;
+
 
 }  // namespace tools

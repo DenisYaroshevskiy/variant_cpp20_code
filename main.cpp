@@ -4,7 +4,6 @@
 #include "switch_.h"
 #include "union_.h"
 #include "error_tag_support.h"
-#include "get_type.h"
 #include "variant_impl.hpp"
 #include "visit_result.h"
 
@@ -128,6 +127,11 @@ concept can_call_get = requires {
   { std::declval<call_get_t<i>>() };
 };
 
+template <typename T, typename ...Ts>
+concept can_find = requires {
+  { find_type_idx<T, Ts...> };
+};
+
 static_assert(std::same_as<call_get_t<0>, ith<0>>);
 static_assert(std::same_as<call_get_t<1>, ith<1>>);
 static_assert(std::same_as<call_get_t<2>, ith<2>>);
@@ -145,6 +149,12 @@ static_assert(std::same_as<call_get_t<11>, ith<11>>);
 static_assert(std::same_as<call_get_t<12>, ith<12>>);
 static_assert(std::same_as<call_get_t<13>, ith<13>>);
 static_assert(std::same_as<call_get_t<14>, ith<14>>);
+
+static_assert(find_type_idx<ith<2>, ith<0>, ith<1>, ith<2>> == 2);
+static_assert(find_type_idx<ith<1>, ith<0>, ith<1>, ith<2>> == 1);
+static_assert(can_find<int, char, int, double>);
+static_assert(!can_find<int, char, double>);
+
 
 static_assert(can_call_get<11>);
 static_assert(!can_call_get<15>);

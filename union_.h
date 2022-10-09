@@ -2,6 +2,7 @@
 
 #include "instance_of.h"
 #include "fwd.h"
+#include <algorithm>
 #include <utility>
 
 namespace tools
@@ -35,6 +36,14 @@ namespace tools
   {
     if constexpr (i == 0) return TOOLS_FWD(self).head;
     else                  return get<i - 1>(TOOLS_FWD(self).tail);
+  }
+
+  template <typename T, typename ...Ts>
+  constexpr void construct_at(union_<Ts...>& self, auto&&...args) {
+    constexpr bool tests [] = { std::same_as<T, Ts>... };
+    constexpr std::size_t i = std::ranges::find(tests, true) - std::begin(tests);
+    static_assert(i < sizeof...(Ts));
+    std::construct_at(&get<i>(self), TOOLS_FWD(args)...);
   }
 
 } // namespace tools
