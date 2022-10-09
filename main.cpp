@@ -38,6 +38,12 @@ static_assert(std::same_as<double&,        decltype(get<2>(std::declval<us&     
 static_assert(std::same_as<double&&,       decltype(get<2>(std::declval<us&&      >()))>);
 static_assert(std::same_as<double const&&, decltype(get<2>(std::declval<us const&&>()))>);
 
+constexpr void foo() {
+  us x;
+  tools::construct_at<0>(x, 1);
+  tools::destroy_at<0>(x);
+}
+
 }  // namespace union_test
 
 namespace switch_test {
@@ -129,7 +135,7 @@ concept can_call_get = requires {
 
 template <typename T, typename ...Ts>
 concept can_find = requires {
-  { find_type_idx<T, Ts...> };
+  { find_type_idx_v<T, Ts...> };
 };
 
 static_assert(std::same_as<call_get_t<0>, ith<0>>);
@@ -150,8 +156,8 @@ static_assert(std::same_as<call_get_t<12>, ith<12>>);
 static_assert(std::same_as<call_get_t<13>, ith<13>>);
 static_assert(std::same_as<call_get_t<14>, ith<14>>);
 
-static_assert(find_type_idx<ith<2>, ith<0>, ith<1>, ith<2>> == 2);
-static_assert(find_type_idx<ith<1>, ith<0>, ith<1>, ith<2>> == 1);
+static_assert(find_type_idx_v<ith<2>, ith<0>, ith<1>, ith<2>> == 2);
+static_assert(find_type_idx_v<ith<1>, ith<0>, ith<1>, ith<2>> == 1);
 static_assert(can_find<int, char, int, double>);
 static_assert(!can_find<int, char, double>);
 

@@ -2,7 +2,6 @@
 
 #include "instance_of.h"
 #include "fwd.h"
-#include <algorithm>
 #include <utility>
 
 namespace tools
@@ -29,21 +28,26 @@ namespace tools
   template <typename T>
   constexpr std::size_t union_size_v = union_size<T>::value;
 
-  template <std::size_t i, typename US>
-  auto&& get(US &&self)
-    requires instance_of<std::remove_cvref_t<US>, union_> &&
-            (i < union_size_v<std::remove_cvref_t<US>>)
+  template <std::size_t i, typename Self>
+  auto&& get(Self&& self)
+    requires instance_of<std::remove_cvref_t<Self>, union_> &&
+            (i < union_size_v<std::remove_cvref_t<Self>>)
   {
     if constexpr (i == 0) return TOOLS_FWD(self).head;
     else                  return get<i - 1>(TOOLS_FWD(self).tail);
   }
 
-  template <typename T, typename ...Ts>
-  constexpr void construct_at(union_<Ts...>& self, auto&&...args) {
-    constexpr bool tests [] = { std::same_as<T, Ts>... };
-    constexpr std::size_t i = std::ranges::find(tests, true) - std::begin(tests);
-    static_assert(i < sizeof...(Ts));
+  template <std::size_t i, typename ...Ts>
+  constexpr void construct_at(union_<Ts...>& self, auto&&...args)
+    requires requires { get<i>(self); } {
     std::construct_at(&get<i>(self), TOOLS_FWD(args)...);
   }
+
+  template <std::size_t i, typename ...Ts>
+  constexpr void destroy_at(union_<Ts...>& self)
+    requires requires { get<i>(self); } {
+    std::destroy_at(&get<i>(self));
+  }
+
 
 } // namespace tools

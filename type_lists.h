@@ -47,7 +47,7 @@ constexpr std::size_t get_type_idx_impl() {
 
 template <typename T, typename ...Ts>
   requires ( _type_lists::get_type_idx_impl<T, Ts...>() < sizeof...(Ts))
-constexpr auto find_type_idx = _type_lists::get_type_idx_impl<T, Ts...>();
+constexpr std::size_t find_type_idx_v = _type_lists::get_type_idx_impl<T, Ts...>();
 
 template <std::size_t n, typename ...Ts>
   requires (n < sizeof ...(Ts))
