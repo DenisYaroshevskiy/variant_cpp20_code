@@ -17,6 +17,6 @@ constexpr auto uint_at_least_impl() {
 }  // _int_utils
 
 template <std::size_t max>
-using uint_at_least = decltype(_int_utils::uint_at_least_impl<max>());
+using uint_at_least_t = decltype(_int_utils::uint_at_least_impl<max>());
 
 }  // namespace tools

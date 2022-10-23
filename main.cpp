@@ -6,6 +6,7 @@
 #include "error_tag_support.h"
 #include "variant_impl.hpp"
 #include "visit_result.h"
+#include "variant.h"
 
 #include <exception>
 #include <stdexcept>
@@ -80,11 +81,11 @@ void switch_runtime_test() {
 
 namespace int_util_test {
 
-static_assert(std::same_as<std::uint8_t,  tools::uint_at_least<100>>);
-static_assert(std::same_as<std::uint8_t,  tools::uint_at_least<255>>);
-static_assert(std::same_as<std::uint16_t, tools::uint_at_least<256>>);
-static_assert(std::same_as<std::uint32_t, tools::uint_at_least<std::numeric_limits<std::uint16_t>::max() + 1u>>);
-static_assert(std::same_as<std::uint64_t, tools::uint_at_least<5'000'000'000>>);
+static_assert(std::same_as<std::uint8_t,  tools::uint_at_least_t<100>>);
+static_assert(std::same_as<std::uint8_t,  tools::uint_at_least_t<255>>);
+static_assert(std::same_as<std::uint16_t, tools::uint_at_least_t<256>>);
+static_assert(std::same_as<std::uint32_t, tools::uint_at_least_t<std::numeric_limits<std::uint16_t>::max() + 1u>>);
+static_assert(std::same_as<std::uint64_t, tools::uint_at_least_t<5'000'000'000>>);
 
 } // namespace int_util_test
 
@@ -133,11 +134,6 @@ concept can_call_get = requires {
   { std::declval<call_get_t<i>>() };
 };
 
-template <typename T, typename ...Ts>
-concept can_find = requires {
-  { find_type_idx_v<T, Ts...> };
-};
-
 static_assert(std::same_as<call_get_t<0>, ith<0>>);
 static_assert(std::same_as<call_get_t<1>, ith<1>>);
 static_assert(std::same_as<call_get_t<2>, ith<2>>);
@@ -158,8 +154,8 @@ static_assert(std::same_as<call_get_t<14>, ith<14>>);
 
 static_assert(find_type_idx_v<ith<2>, ith<0>, ith<1>, ith<2>> == 2);
 static_assert(find_type_idx_v<ith<1>, ith<0>, ith<1>, ith<2>> == 1);
-static_assert(can_find<int, char, int, double>);
-static_assert(!can_find<int, char, double>);
+static_assert(one_of<int, char, int, double>);
+static_assert(!one_of<int, char, double>);
 
 
 static_assert(can_call_get<11>);
@@ -299,6 +295,25 @@ void foo(V1& v1, V3& v3) {
 #endif
 
 }  // namespace visit_result_test
+
+namespace variant_test {
+
+constexpr bool foo() {
+  tools::variant<int, char, double> v1('a');
+  tools::variant<float, float> v2(0.1f);
+  auto v3 = v1;
+
+  return visit([](auto x, auto y) {
+    return std::same_as<decltype(x), char> &&
+           std::same_as<decltype(y), float> &&
+           (x == 'a') &&
+           (y == 0.1f);
+  }, v3, v2);
+}
+
+static_assert(foo());
+
+}  // namespace variant_test
 
 } // namespace
 

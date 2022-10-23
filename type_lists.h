@@ -2,10 +2,11 @@
 
 #include <cstdint>
 
+// Kris Jusiak: The Nth Element: A Case Study https://youtu.be/LfOh0DwTP00
+// https://github.com/willwray
+
 namespace tools {
 namespace _type_lists {
-
-// https://github.com/willwray
 
 template <std::size_t n,
           typename T0 = void,
@@ -34,7 +35,7 @@ constexpr auto get_type_impl() {
 }
 
 template <typename T, typename ...Ts>
-constexpr std::size_t get_type_idx_impl() {
+constexpr std::size_t find_type_idx_impl() {
   std::size_t i = 0;
   for (bool x : { std::same_as<T, Ts> ...}) {
     if (x) break;
@@ -46,8 +47,13 @@ constexpr std::size_t get_type_idx_impl() {
 }  // namespace _type_lists
 
 template <typename T, typename ...Ts>
-  requires ( _type_lists::get_type_idx_impl<T, Ts...>() < sizeof...(Ts))
-constexpr std::size_t find_type_idx_v = _type_lists::get_type_idx_impl<T, Ts...>();
+  requires ( _type_lists::find_type_idx_impl<T, Ts...>() < sizeof...(Ts))
+constexpr std::size_t find_type_idx_v = _type_lists::find_type_idx_impl<T, Ts...>();
+
+template <typename T, typename ...Ts>
+concept one_of = requires {
+  { find_type_idx_v<T, Ts...> };
+};
 
 template <std::size_t n, typename ...Ts>
   requires (n < sizeof ...(Ts))
