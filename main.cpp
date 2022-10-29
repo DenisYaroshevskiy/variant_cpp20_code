@@ -39,11 +39,18 @@ static_assert(std::same_as<double&,        decltype(get<2>(std::declval<us&     
 static_assert(std::same_as<double&&,       decltype(get<2>(std::declval<us&&      >()))>);
 static_assert(std::same_as<double const&&, decltype(get<2>(std::declval<us const&&>()))>);
 
-constexpr void foo() {
-  us x;
-  tools::construct_at<0>(x, 1);
-  tools::destroy_at<0>(x);
+constexpr bool union_runtime() {
+  tools::union_<int, char, double> x;
+  tools::construct_at<2>(x, 1.0);
+  if (get<2>(x) != 1.0) return false;
+  tools::destroy_at<2>(x);
+  tools::construct_at<1>(x, 'a');
+  if (get<1>(x) != 'a') return false;
+  tools::destroy_at<1>(x);
+  return true;
 }
+
+static_assert(union_runtime());
 
 }  // namespace union_test
 
