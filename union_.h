@@ -15,10 +15,12 @@ struct union_ {
 
   constexpr union_() = default;
 
-  constexpr union_(c_idx<0u>, auto&& ...args) : head (TOOLS_FWD(args)...) {}
+  constexpr union_(std::in_place_index_t<0u>, auto&& ...args):
+    head (TOOLS_FWD(args)...) {}
 
   template <std::size_t i>
-  constexpr union_(c_idx<i> idx, auto&& ...args) : tail (c_idx_v<i - 1>, TOOLS_FWD(args)...) {}
+  constexpr union_(std::in_place_index_t<i> idx, auto&& ...args) :
+    tail (std::in_place_index<i - 1>, TOOLS_FWD(args)...) {}
 };
 
 template <typename T>
@@ -26,7 +28,7 @@ struct union_<T> {
   T head;
 
   constexpr union_() = default;
-  constexpr union_(c_idx<0u>, auto&& ...args) : head (TOOLS_FWD(args)...) {}
+  constexpr union_(std::in_place_index_t<0u>, auto&& ...args) : head (TOOLS_FWD(args)...) {}
 };
 
 template <typename>
@@ -51,7 +53,7 @@ constexpr auto&& get(Self&& self)
 template <std::size_t i, typename ...Ts>
 constexpr void construct_at(union_<Ts...>& self, auto&&...args)
   requires requires { get<i>(self); } {
-  std::construct_at(&self, c_idx_v<i>, TOOLS_FWD(args)...);
+  std::construct_at(&self, std::in_place_index<i>, TOOLS_FWD(args)...);
 }
 
 template <std::size_t i, typename ...Ts>
