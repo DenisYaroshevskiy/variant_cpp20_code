@@ -59,5 +59,4 @@ template <std::size_t n, typename ...Ts>
   requires (n < sizeof ...(Ts))
 using get_type_t = typename decltype(_type_lists::get_type_impl<n, Ts...>())::type;
 
-
 }  // namespace tools

@@ -41,7 +41,7 @@ template <typename Vis, typename ...Vs>
   requires ( instance_of<std::remove_cvref_t<Vs>, tools::variant> && ... )
 constexpr auto visit(Vis&& vis, Vs&& ... vs)
   noexcept ( noexcept(detail::visit(TOOLS_FWD(vis), _variant::get_data(TOOLS_FWD(vs)) ...)) ) ->
-  decltype ( detail::visit(TOOLS_FWD(vis), _variant::get_data(TOOLS_FWD(vs)) ...) )
+  detail::visit_result_t<Vis, decltype(_variant::get_data(TOOLS_FWD(vs)))...>
 {
   return detail::visit(TOOLS_FWD(vis), _variant::get_data(TOOLS_FWD(vs)) ...);
 }

@@ -41,8 +41,6 @@ constexpr auto visit(Vis&& vis, Vs&& ... vs)
   } else {
     switcher(idx);
   }
-
 }
-
 
 }  // namespace tools::detail

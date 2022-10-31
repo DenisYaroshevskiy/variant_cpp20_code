@@ -322,6 +322,28 @@ static_assert(foo());
 
 }  // namespace variant_test
 
+#if 0
+namespace variant_error {
+
+using V1 = tools::variant<char, short>;
+using V2 = tools::variant<int, double>;
+using V3 = tools::variant<std::string, double>;
+
+auto min_l = [](auto a, auto b) -> decltype( b < a ? b : a ) {
+  return b < a ? b : a;
+};
+
+static_assert(std::same_as<decltype(
+  tools::visit(min_l, std::declval<V1>(), std::declval<V2>())),
+  double>);
+
+void foo(V1& v1, V3& v3) {
+  tools::visit(min_l, v1, v3);
+}
+
+}  // namespace  variant_error
+#endif
+
 } // namespace
 
 
