@@ -14,6 +14,7 @@ template <auto V>
 constexpr c_idx<V> c_idx_v;
 
 namespace v1 {
+// Michał Dominiak “Variadic expansion in examples" https://youtu.be/Os5YLB5D2BU
 // https://godbolt.org/z/fseddGo5b
 
 template <std::size_t size, typename Op>
