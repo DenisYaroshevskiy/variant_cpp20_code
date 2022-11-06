@@ -25,7 +25,7 @@ struct union_ {
 
 template <typename T>
 struct union_<T> {
-  T head;
+  union { T head; };
 
   constexpr union_() = default;
   constexpr union_(std::in_place_index_t<0u>, auto&& ...args) : head (TOOLS_FWD(args)...) {}
